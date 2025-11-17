@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".ui.main.ForeignFragment">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <TextView
+            android:layout_marginTop="20dp"
+            android:layout_marginBottom="40dp"
+
+            android:layout_alignParentEnd="true"
+            android:layout_marginEnd="20dp"
+            style="@style/TextTitleMedium"
+            android:id="@+id/tv_total_price"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
+
+        <!-- TODO: Update blank fragment layout -->
+        <com.github.mikephil.charting.charts.PieChart
+            android:layout_below="@id/tv_total_price"
+
+            android:layout_width="match_parent"
+            android:layout_height="260dp"
+            android:id="@+id/pieChart"
+            />
+        <RelativeLayout
+            android:layout_marginTop="20dp"
+            android:id="@+id/layout_line"
+            android:layout_below="@id/pieChart"
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="@drawable/bg_list_line"
+            />
+
+
+
+        <androidx.recyclerview.widget.RecyclerView
+
+            android:layout_below="@id/layout_line"
+            android:id="@+id/listAssets"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            />
+    </RelativeLayout>
+</FrameLayout>
