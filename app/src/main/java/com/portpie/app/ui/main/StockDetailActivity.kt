@@ -62,6 +62,8 @@ class StockDetailActivity : AppCompatActivity() {
 
         if(type== StockType.CRYPTO){
             viewModel.loadCrypto(stock)
+        }else if(type== StockType.ETF_DOMESTIC||type== StockType.ETF_FOREIGN){
+            viewModel.loadEtf(stock)
         }else {
             viewModel.loadStock(stock)
         }

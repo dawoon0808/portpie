@@ -71,6 +71,14 @@ class OwnedAssetViewModel(context: Context, private val stockRepository: StockRe
                     }else if(asset.type== StockType.GOLD){
                         var price = stockRepository.getGoldSpotPriceKR()
                         repository.updatePrice(asset.id,price)
+                    }else if(asset.type== StockType.ETF_DOMESTIC){
+                        var price = stockRepository.getInvestingKREtf(asset.symbol,asset.price)  // 국내/해외 주식
+
+                        repository.updatePrice(asset.id, price)
+                    }else if(asset.type== StockType.ETF_FOREIGN){
+                        var price = stockRepository.getInvestingKREtf(asset.symbol,asset.price)  // 국내/해외 주식
+
+                        repository.updatePrice(asset.id, price)
                     }else{
                         var price = stockRepository.getInvestingKRStock(asset.symbol,asset.price)  // 국내/해외 주식
 

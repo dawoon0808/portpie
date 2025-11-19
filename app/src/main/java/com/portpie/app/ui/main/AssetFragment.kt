@@ -136,6 +136,9 @@ class AssetFragment : Fragment() {
             .filter { it.type == StockType.DOMESTIC }
             .sumOf { it.amount * it.price }
 
+        val etf = assetList.filter { it.type== StockType.ETF_DOMESTIC||it.type== StockType.ETF_FOREIGN }
+            .sumOf { it.amount*it.price }
+
         val foreign = assetList
             .filter { it.type == StockType.FOREIGN }
             .sumOf { it.amount * it.price }
@@ -156,6 +159,7 @@ class AssetFragment : Fragment() {
         if (crypto > 0)   entries.add(PieEntry(crypto.toFloat(), "코인"))
         if (cash > 0)   entries.add(PieEntry(cash.toFloat(), "현금"))
         if (gold > 0)   entries.add(PieEntry(gold.toFloat(), "금"))
+        if (etf > 0) entries.add(PieEntry(etf.toFloat(), "ETF"))
         // 🔥 DataSet 구성
 
 

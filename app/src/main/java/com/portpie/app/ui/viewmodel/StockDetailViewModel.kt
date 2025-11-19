@@ -31,6 +31,18 @@ class StockDetailViewModel(private val repository: StockRepository = StockReposi
             }
         }
     }
+    fun loadEtf(stock: Stock){
+        viewModelScope.launch {
+            try {
+                val result = repository.getInvestingKREtf(stock)
+
+                _stock.value = result
+            }catch (e: Exception){
+                e.printStackTrace()
+                _stock.value = null
+            }
+        }
+    }
     fun loadCrypto(stock: Stock){
         viewModelScope.launch {
             try {

@@ -132,7 +132,7 @@ class DomesticFragment : Fragment() {
     private fun updateChart(assetList: List<OwnedAsset>) {
 
         val foreign = assetList
-            .filter { it.type == StockType.DOMESTIC }
+            .filter { it.type == StockType.DOMESTIC ||it.type== StockType.ETF_DOMESTIC }
 
         val entries = ArrayList<PieEntry>()
 

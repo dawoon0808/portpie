@@ -10,6 +10,8 @@ enum class StockType{
     GOLD,
     OTHER,
     CASH,
+    ETF_DOMESTIC,
+    ETF_FOREIGN
 
 
 }

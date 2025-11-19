@@ -41,10 +41,17 @@ class StockRepository {
                 val marketInfo = item.selectFirst("span.fourth")?.text() ?: ""
 
                 // 국내/해외 구분
-                val type = if (marketInfo.contains("서울") || marketInfo.contains("KOSPI") || marketInfo.contains("KOSDAQ")) {
-                    StockType.DOMESTIC
-                } else if(marketInfo.contains("인베스팅닷컴")){
+                val type = if(marketInfo.contains("인베스팅닷컴")){
                     StockType.CRYPTO
+                }else if(marketInfo.contains("상장지수펀드")){
+                    if(marketInfo.contains("서울")|| marketInfo.contains("KOSPI") || marketInfo.contains("KOSDAQ")){
+                        StockType.ETF_DOMESTIC
+                    }else{
+                        StockType.ETF_FOREIGN
+                    }
+
+                }else if(marketInfo.contains("서울") || marketInfo.contains("KOSPI") || marketInfo.contains("KOSDAQ")){
+                    StockType.DOMESTIC
                 }else{
                     StockType.FOREIGN
                 }
@@ -67,7 +74,72 @@ class StockRepository {
         }
     }
 
+    suspend fun getInvestingKREtf(stock: Stock): Stock = withContext(Dispatchers.IO) {
+        val url = "https://kr.investing.com/etfs/${stock.symbol}"
+        Log.d("jdw",url)
+        try {
+            val doc = Jsoup.connect(url)
+                .userAgent("Mozilla/5.0 (Windows NT 10.0; Win64; x64)")
+                .referrer("https://www.google.com/")
+                .timeout(10_000)
+                .get()
 
+            val priceElement = doc.selectFirst("div[data-test=instrument-price-last]")
+            val priceText = priceElement?.text()?.replace(",", "")?.trim()
+
+            val price = priceText?.toDoubleOrNull() ?: 0.0
+
+            val type = if (doc.text().contains("서울") || doc.text().contains("KOSPI")) {
+                StockType.ETF_DOMESTIC
+            } else {
+                StockType.ETF_FOREIGN
+
+            }
+            var finalPrice = price
+            if(type== StockType.ETF_FOREIGN){
+                val rate = fetchUsdToKrwRateFromInvesting()
+                finalPrice = price * rate
+            }
+            stock.copy(price = finalPrice, type = type)
+
+        } catch (e: Exception) {
+            e.printStackTrace()
+            stock.copy(price = 0.0)
+        }
+    }
+    suspend fun getInvestingKREtf(symbol: String,originPrice: Double): Double {
+        val url = "https://kr.investing.com/etfs/${symbol}"
+        Log.d("jdw",url)
+        try {
+            val doc = Jsoup.connect(url)
+                .userAgent("Mozilla/5.0 (Windows NT 10.0; Win64; x64)")
+                .referrer("https://www.google.com/")
+                .timeout(10_000)
+                .get()
+
+            val priceElement = doc.selectFirst("div[data-test=instrument-price-last]")
+            val priceText = priceElement?.text()?.replace(",", "")?.trim()
+
+            val price = priceText?.toDoubleOrNull() ?: 0.0
+
+            val type = if (doc.text().contains("서울") || doc.text().contains("KOSPI")) {
+                StockType.ETF_DOMESTIC
+            } else {
+                StockType.ETF_FOREIGN
+
+            }
+            var finalPrice = price
+            if(type== StockType.ETF_FOREIGN){
+                val rate = fetchUsdToKrwRateFromInvesting()
+                finalPrice = price * rate
+            }
+           return finalPrice
+
+        } catch (e: Exception) {
+            e.printStackTrace()
+           return originPrice
+        }
+    }
     suspend fun getInvestingKRStock(stock: Stock): Stock = withContext(Dispatchers.IO) {
         val url = "https://kr.investing.com/equities/${stock.symbol}"
         Log.d("jdw",url)
@@ -231,7 +303,7 @@ class StockRepository {
             val doc = Jsoup.connect(url)
                 .userAgent("Mozilla/5.0 (Windows NT 10.0; Win64; x64)")
                 .referrer("https://www.google.com/")
-                .timeout(10_000)
+                .timeout(20_000)
                 .get()
 
             // ✅ 가격 부분은 아래 구조 중 하나
@@ -244,7 +316,7 @@ class StockRepository {
             rate
         } catch (e: Exception) {
             e.printStackTrace()
-            1300.0 // 실패 시 기본값
+            1400.0 // 실패 시 기본값
         }
     }
 
